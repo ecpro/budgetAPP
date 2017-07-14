@@ -1,7 +1,44 @@
-
 // BUDGET CONTROLLER
 var budgetController = (function() {
    
+   var Expense = function(id, description, value) {
+        this.id = id;
+        this.description = description;
+        this.value = value;
+   }
+
+   var Income = function(id, description, value) {
+       this.id = id;
+       this.description = description;
+       this.value = value;
+   }
+
+   var data = {
+       allItems : {
+           exp : [],
+           inc : [],
+       },
+       totals: {
+           exp : 0,
+           inc : 0
+       }
+   };
+
+   return {
+       addItem : function(type, des, val) {
+            var newItem;
+
+            if(type === 'inc') {
+                newItem = new Income(id, des, val);
+            }
+            else if(type === 'exp'){
+                newItem = new Expense(id, des, val);
+            }
+            return newItem;
+       }
+   }
+
+
 })();
 
 
@@ -47,7 +84,7 @@ var appController = (function(budgetCtrl, UICtrl){
        // 5. update the UI
    };
 
-    function init() {
+    var setupEventListeners = function () {
         
         document.querySelector(domStrings.add_btn).addEventListener('click', ctrlAddItem);
         document.addEventListener('keyup', function(event) {
@@ -58,7 +95,14 @@ var appController = (function(budgetCtrl, UICtrl){
         });
     };
 
-    init();
+    return {
+        init : function() {
+            console.log('Application Started');
+            setupEventListeners();
+        }
+    }
       
    
 })(budgetController, UIController);
+
+appController.init();
