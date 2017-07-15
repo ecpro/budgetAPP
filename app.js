@@ -109,7 +109,11 @@ var UIController = (function () {
         add_value: '.add__value',
         add_btn: '.add__btn',
         expenses_list: '.expenses__list',
-        income_list: '.income__list'
+        income_list: '.income__list',
+        balanceSumLabel: '.budget__value',
+        incomeLabel : '.budget__income--value',
+        expensesLabel : '.budget__expenses--value',
+        percentExpLabel : '.budget__expenses--percentage'
 
     };
 
@@ -156,6 +160,20 @@ var UIController = (function () {
             });
 
             nodeList[0].focus();
+        },
+
+        displayBudget : function(obj) {
+            document.querySelector(domStrings.balanceSumLabel).textContent = obj.balance;
+            document.querySelector(domStrings.incomeLabel).textContent = obj.totalIncome;
+            document.querySelector(domStrings.expensesLabel).textContent = obj.totalExpenses;
+
+            if(obj.percentExp > 0) {
+                document.querySelector(domStrings.percentExpLabel).textContent = obj.percentExp + ' %';
+            }
+            else {
+                document.querySelector(domStrings.percentExpLabel).textContent = '--';
+            }
+
         }
     }
 
@@ -184,10 +202,13 @@ var appController = (function (budgetCtrl, UICtrl) {
             //4. clear input fields
             UICtrl.clearInputFields();
 
-            // 6.update budget
+            // 6.update budget and get budget info
             budgetCtrl.updateBalanceInfo();
+            balanceInfo = budgetCtrl.getBalanceInfo();
 
             // 7.update the UI
+            UICtrl.displayBudget(balanceInfo);
+
         }
         else {
             console.warn("invalid input");
@@ -210,6 +231,13 @@ var appController = (function (budgetCtrl, UICtrl) {
         init: function () {
             console.log('Application Started');
             setupEventListeners();
+            UICtrl.displayBudget( {
+                balance: 0,
+                percentExp: 0,
+                percentRem: 0,
+                totalIncome: 0,
+                totalExpenses: 0
+            });
         }
     }
 
