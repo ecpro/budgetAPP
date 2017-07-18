@@ -5,6 +5,15 @@ var budgetController = (function () {
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
+    }
+
+    Expense.prototype.calcPercentage = function (totalIncome) {
+        if (totalIncome > 0) this.percentage = Math.round(((this.value / totalIncome) * 100));
+    }
+
+    Expense.prototype.getPercentage = function () {
+        return this.percentage;
     }
 
     var Income = function (id, description, value) {
@@ -76,17 +85,17 @@ var budgetController = (function () {
             //         break;
             //     }
             // }
-            
+
             // a simpler way of doing above steps
 
-             var ids = data.allItems[type].map(function(curr) {
+            var ids = data.allItems[type].map(function (curr) {
                 curr.id;
             })
 
             index = ids.indexOf(itemId);
 
-            return data.allItems[type].splice(index , 1);
-            
+            return data.allItems[type].splice(index, 1);
+
         },
 
         testing: function () {
@@ -117,6 +126,19 @@ var budgetController = (function () {
                 totalIncome: data.totals.inc,
                 totalExpenses: data.totals.exp
             }
+        },
+
+        calculatePercentages: function () {
+            data.allItems.exp.forEach(function (curr) {
+                curr.calcPercentage(data.totals.inc);
+            });
+        },
+
+        getExpPercentages: function () {
+            var percent = data.allItems.exp.map(function (curr) {
+                return curr.getPercentage();
+            });
+            return percent;
         }
     }
 
@@ -200,7 +222,7 @@ var UIController = (function () {
 
         },
 
-        removeListItem : function removeListItem(item) {
+        removeListItem: function removeListItem(item) {
             var element = document.getElementById(item);
             element.parentNode.removeChild(element);
         }
@@ -211,10 +233,13 @@ var UIController = (function () {
 // APP CONTROLLER
 var appController = (function (budgetCtrl, UICtrl) {
 
-    var input, domStrings, newItem, balanceInfo;
+    var input, domStrings, newItem, balanceInfo, expPercentages;
 
     domStrings = UICtrl.getDomStrings();
 
+    var updatePercentages = function () {
+
+    };
 
     var ctrlAddItem = function () {
 
@@ -237,6 +262,13 @@ var appController = (function (budgetCtrl, UICtrl) {
 
             // 7.update the UI
             UICtrl.displayBudget(balanceInfo);
+
+            // 8. calculate individual percentages
+            budgetCtrl.calculatePercentages();
+
+            // 9 .getPercentages
+            expPercentages = budgetController.getExpPercentages();
+            console.info(expPercentages);
 
         }
         else {
@@ -283,6 +315,13 @@ var appController = (function (budgetCtrl, UICtrl) {
 
         // 4. update the UI
         UIController.displayBudget(budgetCtrl.getBalanceInfo());
+
+        // 8. calculate individual percentages
+        budgetCtrl.calculatePercentages();
+
+        // 9 .getPercentages
+        expPercentages = budgetController.getExpPercentages();
+        console.info(expPercentages);
     };
 
     return {
