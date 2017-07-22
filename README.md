@@ -1,2 +1,2 @@
 # budgetAPP
-Expense manager application
+Expense manager application using pure javascript (without any libraries), html and css
